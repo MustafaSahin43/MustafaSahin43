@@ -185,14 +185,14 @@
             cell.textContent = '💣'; // Mayın simgesi
 
             showAllMines(); // Tüm mayınları göster
-            document.getElementById("message").textContent = `Mayına bastınız! Oyun Bitti! Puanınız: ${score + accumulatedPoints}`;
+            document.getElementById("message").textContent = `Mayına bastınız! Oyun Bitti! MusCoin: ${score + accumulatedPoints}`;
             gameOver = true;
             accumulatedPoints = 0;  // Mayına basınca biriken puarı sıfırlama
         } else {
             cell.classList.add('revealed');
             // Hiçbir şey gösterme (boş hücreler)
             accumulatedPoints += enteredPoints; // Biriken puana ekle
-            document.getElementById("pointsAccumulated").textContent = `Biriken Puan: ${Math.floor(accumulatedPoints)}`; // Biriken puanı tam sayı olarak göster
+            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: ${Math.floor(accumulatedPoints)}`; // Biriken puanı tam sayı olarak göster
         }
 
         if (revealedCount === gridSize * gridSize - numMines) {
@@ -232,7 +232,7 @@
     // Oyun başlat
     function startGame() {
         if (score <= 0) {
-            document.getElementById("errorMessage").textContent = 'Yeterli puanınız yok! Lütfen puanınızı artırın.';
+            document.getElementById("errorMessage").textContent = 'Yeterli MusCoiniz yok!';
             return; // Eğer puan 0 veya daha düşükse, oyunu başlatma
         }
 
@@ -254,8 +254,8 @@
             document.getElementById("errorMessage").textContent = ''; // Hata mesajını sıfırla
         }
 
-        document.getElementById("score").textContent = `Puan: ${score}`;
-        document.getElementById("spent").textContent = `Giriş için harcanan puan: ${spentPoints}`;
+        document.getElementById("score").textContent = `MusCoin: ${score}`;
+        document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: ${spentPoints}`;
 
         createBoard();  // Yeni tahtayı oluştur
         createBoardUI(); // Tahtayı UI'ye ekle
@@ -269,10 +269,10 @@
         if (accumulatedPoints > 0) {
             const totalPointsToAdd = Math.floor(accumulatedPoints); // Çekilen puanı tam sayıya yuvarla
             score += totalPointsToAdd;
-            document.getElementById("score").textContent = `Puan: ${score}`;
-            document.getElementById("spent").textContent = `Giriş için harcanan puan: 0`;
-            document.getElementById("pointsAccumulated").textContent = `Biriken Puan: 0`;
-            document.getElementById("spendMessage").textContent = `Puan başarıyla çekildi: ${totalPointsToAdd}`;
+            document.getElementById("score").textContent = `MusCoin: ${score}`;
+            document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: 0`;
+            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: 0`;
+            document.getElementById("spendMessage").textContent = `MusCoin başarıyla çekildi: ${totalPointsToAdd}`;
 
             // Tüm mayınları göster
             showAllMines();
@@ -280,7 +280,7 @@
             accumulatedPoints = 0; // Biriken puanı sıfırla
             gameOver = true; // Oyun bitir
         } else {
-            document.getElementById("spendMessage").textContent = 'Henüz biriken puan yok!';
+            document.getElementById("spendMessage").textContent = 'Henüz biriken MusCoin yok!';
         }
     }
 </script>
