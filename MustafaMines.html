@@ -232,7 +232,7 @@
     // Oyun başlat
     function startGame() {
         if (score <= 0) {
-            document.getElementById("errorMessage").textContent = 'Yeterli puanınız yok! Lütfen puanınızı artırın.'; 
+            document.getElementById("errorMessage").textContent = 'Yeterli puanınız yok! Lütfen puanınızı artırın.';
             return; // Eğer puan 0 veya daha düşükse, oyunu başlatma
         }
 
@@ -242,9 +242,9 @@
         numMines = Math.min(Math.max(parseInt(inputMineCount), 1), 24); // Mayın sayısını 1 ile 24 arasında sınırlayın
         enteredPoints = parseInt(inputEnteredPoints); // Giriş için harcanan puanı alın
 
-        // Mayın sayısına bağlı olarak puan harca ve çarpan ekle
-        spentPoints = numMines * enteredPoints;  // Mayın sayısına bağlı harcanan puan
-        score -= spentPoints;         // Harcanan puanı direkt puandan çıkar
+        // Mayın sayısına bağlı olarak harcama yapma yerine sadece girilen puan miktarını kullan
+        spentPoints = enteredPoints;  // Yalnızca girilen puan harcanır
+        score -= spentPoints;         // Harcanan puan, kullanıcı puanından çıkar
 
         // Eğer puan 0'ın altına düşerse, "Para Eksik" mesajı göster
         if (score < 0) {
@@ -283,7 +283,6 @@
             document.getElementById("spendMessage").textContent = 'Henüz biriken puan yok!';
         }
     }
-
 </script>
 
 </body>
