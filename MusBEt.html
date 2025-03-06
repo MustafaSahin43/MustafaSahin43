@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futbol Maçları</title>
+    <title>Canlı Maç Sonuçları</title>
 </head>
 <body>
-    <h1>Futbol Maçları</h1>
+    <h1>Canlı Maç Sonuçları</h1>
     <button onclick="fetchMatches()">Maçları Getir</button>
     <ul id="matchList"></ul>
 
     <script>
         async function fetchMatches() {
-            const apiUrl = "https://api.football-data.org/v2/competitions/PL/matches";
-            const proxyUrl = "https://cors-anywhere.herokuapp.com/"; // Proxy servisini kullanıyoruz
+            const apiUrl = "https://v3.football.api-sports.io/fixtures?league=39&season=2024"; // Premier Lig 2024
             const apiKey = "bcb8c2d511f34ce3b55e0e59e9d381b3"; // Buraya kendi API anahtarını koy
 
             try {
-                let response = await fetch(proxyUrl + apiUrl, {
-                    headers: { "X-Auth-Token": apiKey }
+                let response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: { "x-apisports-key": apiKey }
                 });
-                let data = await response.json();
 
+                let data = await response.json();
                 let matchList = document.getElementById("matchList");
                 matchList.innerHTML = "";
 
-                data.matches.forEach(match => {
+                data.response.forEach(match => {
                     let listItem = document.createElement("li");
-                    listItem.textContent = `${match.homeTeam.name} vs ${match.awayTeam.name} - Skor: ${match.score.fullTime.home} - ${match.score.fullTime.away}`;
+                    listItem.textContent = `${match.teams.home.name} vs ${match.teams.away.name} - Skor: ${match.goals.home} - ${match.goals.away}`;
                     matchList.appendChild(listItem);
                 });
             } catch (error) {
