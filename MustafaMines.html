@@ -26,16 +26,16 @@
         }
         .board {
             display: grid;
-            grid-template-columns: repeat(40, 20px); /* 40 hücre için genişlik */
-            grid-template-rows: repeat(40, 20px);    /* 40 hücre için yükseklik */
-            gap: 2px;
+            grid-template-columns: repeat(5, 40px);
+            grid-template-rows: repeat(5, 40px);
+            gap: 5px;
             justify-content: center;
             margin-top: 20px;
         }
         button {
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
             background-color: #444;
             color: white;
             border: 1px solid #999;
@@ -90,12 +90,6 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        img {
-            margin-left: 5px; /* Resmin metin ile arasına boşluk ekler */
-            vertical-align: middle; /* Resmin metinle hizalanmasını sağlar */
-            width: 40px; /* MusCoin görselinin boyutu 40px x 40px */
-            height: 40px; /* MusCoin görselinin boyutu 40px x 40px */
-        }
     </style>
 </head>
 <body>
@@ -109,16 +103,16 @@
 <div id="message" class="message"></div>
 
 <!-- Score, Spent, Accumulated Points -->
-<div id="score" class="score">MusCoin: <img src="muscoin.png" alt="coin"></div>
-<div id="spent" class="spent">Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin"></div>
-<div id="pointsAccumulated" class="points-accumulated">Biriken MusCoin: <img src="muscoin.png" alt="coin"></div>
+<div id="score" class="score">MusCoin: 1000</div>
+<div id="spent" class="spent">Giriş için harcanan MusCoin: 0</div>
+<div id="pointsAccumulated" class="points-accumulated">Biriken MusCoin: 0</div>
 <div id="spendMessage" class="spend-message"></div>
 <div id="errorMessage" class="error"></div> <!-- Hata mesajı için yeni bir alan -->
 
 <!-- Settings Section (Alt Kısımda) -->
 <div class="settings">
     <label for="mineCount">Mayın Sayısını Seç: </label>
-    <input type="number" id="mineCount" value="5" min="1" max="40">
+    <input type="number" id="mineCount" value="5" min="1" max="24">
     <br><br>
     <label for="enterPoints">Giriş İçin Harcanan MusCoin: </label>
     <input type="number" id="enterPoints" value="100" min="1">
@@ -128,7 +122,7 @@
 </div>
 
 <script>
-    const gridSize = 40; // Grid boyutunu 40x40 olarak ayarladık
+    const gridSize = 5; // Grid boyutu (5x5)
     let numMines = 5;  // Başlangıçta 5 mayın
     let board = [];
     let revealedCount = 0;
@@ -170,7 +164,7 @@
     function revealCell(row, col) {
         if (board[row][col].revealed || gameOver) return;
 
-        const cell = document.getElementById(`cell-${row}-${col}`);
+        const cell = document.getElementById(cell-${row}-${col});
         board[row][col].revealed = true;
         revealedCount++;
 
@@ -186,23 +180,23 @@
             cell.classList.add('mine');
             const multiplierElement = document.createElement('div');
             multiplierElement.classList.add('multiplier');
-            multiplierElement.textContent = `x${Math.floor(enteredPoints)}`; // Çarpan değeri burada yazılacak
+            multiplierElement.textContent = x${Math.floor(enteredPoints)}; // Çarpan değeri burada yazılacak
             cell.appendChild(multiplierElement);
             cell.textContent = '💣'; // Mayın simgesi
 
             showAllMines(); // Tüm mayınları göster
-            document.getElementById("message").textContent = `Mayına bastınız! Oyun Bitti! MusCoin: ${score + accumulatedPoints}`;
+            document.getElementById("message").textContent = Mayına bastınız! Oyun Bitti! MusCoin: ${score + accumulatedPoints};
             gameOver = true;
             accumulatedPoints = 0;  // Mayına basınca biriken puarı sıfırlama
         } else {
             cell.classList.add('revealed');
             // Hiçbir şey gösterme (boş hücreler)
             accumulatedPoints += enteredPoints; // Biriken puana ekle
-            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: ${Math.floor(accumulatedPoints)}`; // Biriken puanı tam sayı olarak göster
+            document.getElementById("pointsAccumulated").textContent = Biriken MusCoin: ${Math.floor(accumulatedPoints)}; // Biriken puanı tam sayı olarak göster
         }
 
         if (revealedCount === gridSize * gridSize - numMines) {
-            document.getElementById("message").textContent = `Tebrikler, Kazandınız! Puanınız: ${score + accumulatedPoints}`;
+            document.getElementById("message").textContent = Tebrikler, Kazandınız! Puanınız: ${score + accumulatedPoints};
             gameOver = true;
         }
     }
@@ -211,7 +205,7 @@
     function showAllMines() {
         for (let row = 0; row < gridSize; row++) {
             for (let col = 0; col < gridSize; col++) {
-                const cell = document.getElementById(`cell-${row}-${col}`);
+                const cell = document.getElementById(cell-${row}-${col});
                 if (board[row][col].mine && !board[row][col].revealed) {
                     cell.classList.add('mine');
                     cell.textContent = '💣';
@@ -228,7 +222,7 @@
         for (let row = 0; row < gridSize; row++) {
             for (let col = 0; col < gridSize; col++) {
                 const button = document.createElement('button');
-                button.id = `cell-${row}-${col}`;
+                button.id = cell-${row}-${col};
                 button.addEventListener('click', () => revealCell(row, col));
                 boardElement.appendChild(button);
             }
@@ -245,7 +239,7 @@
         const inputMineCount = document.getElementById('mineCount').value;
         const inputEnteredPoints = document.getElementById('enterPoints').value;
 
-        numMines = Math.min(Math.max(parseInt(inputMineCount), 1), 40); // Mayın sayısını 1 ile 40 arasında sınırlayın
+        numMines = Math.min(Math.max(parseInt(inputMineCount), 1), 24); // Mayın sayısını 1 ile 24 arasında sınırlayın
         enteredPoints = parseInt(inputEnteredPoints); // Giriş için harcanan puanı alın
 
         // Mayın sayısına bağlı olarak harcama yapma yerine sadece girilen puan miktarını kullan
@@ -260,8 +254,8 @@
             document.getElementById("errorMessage").textContent = ''; // Hata mesajını sıfırla
         }
 
-        document.getElementById("score").textContent = `MusCoin: <img src="muscoin.png" alt="coin"> ${score}`;
-        document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin"> ${spentPoints}`;
+        document.getElementById("score").textContent = MusCoin: ${score};
+        document.getElementById("spent").textContent = Giriş için harcanan MusCoin: ${spentPoints};
 
         createBoard();  // Yeni tahtayı oluştur
         createBoardUI(); // Tahtayı UI'ye ekle
@@ -275,10 +269,10 @@
         if (accumulatedPoints > 0) {
             const totalPointsToAdd = Math.floor(accumulatedPoints); // Çekilen puanı tam sayıya yuvarla
             score += totalPointsToAdd;
-            document.getElementById("score").textContent = `MusCoin: <img src="muscoin.png" alt="coin"> ${score}`;
-            document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin"> 0`;
-            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: <img src="muscoin.png" alt="coin"> 0`;
-            document.getElementById("spendMessage").textContent = `MusCoin başarıyla çekildi: ${totalPointsToAdd}`;
+            document.getElementById("score").textContent = MusCoin: ${score};
+            document.getElementById("spent").textContent = Giriş için harcanan MusCoin: 0;
+            document.getElementById("pointsAccumulated").textContent = Biriken MusCoin: 0;
+            document.getElementById("spendMessage").textContent = MusCoin başarıyla çekildi: ${totalPointsToAdd};
 
             // Tüm mayınları göster
             showAllMines();
