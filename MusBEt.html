@@ -12,18 +12,14 @@
 
     <script>
         async function fetchMatches() {
-            const apiUrl = 'https://api.football-data.org/v4/competitions/CL/matches'; // Örnek: Premier Lig
-            const apiKey = 'bcb8c2d511f34ce3b55e0e59e9d381b3'; // Buraya kendi API anahtarınızı ekleyin
-            
+            const apiUrl = "http://localhost:3000/matches"; // Proxy sunucuya bağlanıyoruz
             try {
-                let response = await fetch(apiUrl, {
-                    headers: { "X-Auth-Token": apiKey }
-                });
+                let response = await fetch(apiUrl);
                 let data = await response.json();
                 
                 let matchList = document.getElementById("matchList");
                 matchList.innerHTML = "";
-                
+
                 data.matches.forEach(match => {
                     let listItem = document.createElement("li");
                     listItem.textContent = `${match.homeTeam.name} vs ${match.awayTeam.name} - Skor: ${match.score.fullTime.home} - ${match.score.fullTime.away}`;
