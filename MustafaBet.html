@@ -1,1 +1,290 @@
 
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MustafaMines</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin: 20px;
+            font-size: 24px;
+        }
+        .settings {
+            margin-top: 20px;
+            position: absolute;
+            bottom: 150px;
+            width: 100%;
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(5, 40px);
+            grid-template-rows: repeat(5, 40px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            background-color: #444;
+            color: white;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+        button.revealed {
+            background-color: #ddd;
+            color: black;
+        }
+        button.mine {
+            background-color: red;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: yellow;
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .score {
+            font-size: 20px;
+            color: white;
+            margin-top: 10px;
+        }
+        .spent {
+            font-size: 18px;
+            color: red;
+            margin-top: 10px;
+        }
+        .points-accumulated {
+            font-size: 18px;
+            color: lightblue;
+            margin-top: 10px;
+        }
+        .spend-message {
+            font-size: 18px;
+            color: orange;
+            margin-top: 10px;
+        }
+        .error {
+            font-size: 18px;
+            color: red;
+            margin-top: 10px;
+        }
+        .multiplier {
+            font-size: 12px;
+            color: yellow;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+
+<h1>MustafaMines</h1>
+
+<!-- Board Section -->
+<div id="board" class="board"></div>
+
+<!-- Score and Game Over / Win Message -->
+<div id="message" class="message"></div>
+
+<!-- Score, Spent, Accumulated Points -->
+<div id="score" class="score">MusCoin: 1000</div>
+<div id="spent" class="spent">Giriş için harcanan MusCoin: 0</div>
+<div id="pointsAccumulated" class="points-accumulated">Biriken MusCoin: 0</div>
+<div id="spendMessage" class="spend-message"></div>
+<div id="errorMessage" class="error"></div> <!-- Hata mesajı için yeni bir alan -->
+
+<!-- Settings Section (Alt Kısımda) -->
+<div class="settings">
+    <label for="mineCount">Mayın Sayısını Seç: </label>
+    <input type="number" id="mineCount" value="5" min="1" max="24">
+    <br><br>
+    <label for="enterPoints">Giriş İçin Harcanan MusCoin: </label>
+    <input type="number" id="enterPoints" value="100" min="1">
+    <br><br>
+    <button onclick="startGame()">Oyunu Başlat</button>
+    <button onclick="spendPoints()">MusCoini Çek</button>
+</div>
+
+<script>
+    const gridSize = 5; // Grid boyutu (5x5)
+    let numMines = 5;  // Başlangıçta 5 mayın
+    let board = [];
+    let revealedCount = 0;
+    let score = 1000;   // Başlangıç puanı 1000
+    let spentPoints = 0; // Harcanan puan
+    let accumulatedPoints = 0; // Biriken puan
+    let enteredPoints = 0; // Girdiği puan
+    let gameOver = false;
+    let isFirstCellClicked = false; // İlk tıklama kontrolü
+
+    // Oyun tahtasını oluştur
+    function createBoard() {
+        board = [];
+        revealedCount = 0;
+        gameOver = false;
+
+        // Grid ile boş hücreler oluştur
+        for (let row = 0; row < gridSize; row++) {
+            let rowArray = [];
+            for (let col = 0; col < gridSize; col++) {
+                rowArray.push({ mine: false, revealed: false });
+            }
+            board.push(rowArray);
+        }
+
+        // Rastgele mayınları yerleştir
+        let minesPlaced = 0;
+        while (minesPlaced < numMines) {
+            let row = Math.floor(Math.random() * gridSize);
+            let col = Math.floor(Math.random() * gridSize);
+            if (!board[row][col].mine) {
+                board[row][col].mine = true;
+                minesPlaced++;
+            }
+        }
+    }
+
+    // Hücreyi aç
+    function revealCell(row, col) {
+        if (board[row][col].revealed || gameOver) return;
+
+        const cell = document.getElementById(`cell-${row}-${col}`);
+        board[row][col].revealed = true;
+        revealedCount++;
+
+        if (!isFirstCellClicked) {
+            enteredPoints = spentPoints;  // İlk tıklamada girdiği puan alınır
+            isFirstCellClicked = true;    // İlk tıklama yapıldığında değişkeni true yap
+        } else {
+            enteredPoints = enteredPoints * 1.1; // Sonraki tıklamalarda biriken puan ile çarpılır
+        }
+
+        // Mayına basıldığında, kazanç puanını eklemeyin
+        if (board[row][col].mine) {
+            cell.classList.add('mine');
+            const multiplierElement = document.createElement('div');
+            multiplierElement.classList.add('multiplier');
+            multiplierElement.textContent = `x${Math.floor(enteredPoints)}`; // Çarpan değeri burada yazılacak
+            cell.appendChild(multiplierElement);
+            cell.textContent = '💣'; // Mayın simgesi
+
+            showAllMines(); // Tüm mayınları göster
+            document.getElementById("message").textContent = `Mayına bastınız! Oyun Bitti! MusCoin: ${score + accumulatedPoints}`;
+            gameOver = true;
+            accumulatedPoints = 0;  // Mayına basınca biriken puarı sıfırlama
+        } else {
+            cell.classList.add('revealed');
+            // Hiçbir şey gösterme (boş hücreler)
+            accumulatedPoints += enteredPoints; // Biriken puana ekle
+            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: ${Math.floor(accumulatedPoints)}`; // Biriken puanı tam sayı olarak göster
+        }
+
+        if (revealedCount === gridSize * gridSize - numMines) {
+            document.getElementById("message").textContent = `Tebrikler, Kazandınız! Puanınız: ${score + accumulatedPoints}`;
+            gameOver = true;
+        }
+    }
+
+    // Tüm mayınları göster
+    function showAllMines() {
+        for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+                const cell = document.getElementById(`cell-${row}-${col}`);
+                if (board[row][col].mine && !board[row][col].revealed) {
+                    cell.classList.add('mine');
+                    cell.textContent = '💣';
+                }
+            }
+        }
+    }
+
+    // Tahtayı kullanıcıya göster
+    function createBoardUI() {
+        const boardElement = document.getElementById('board');
+        boardElement.innerHTML = ''; // Tahtayı temizle
+
+        for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+                const button = document.createElement('button');
+                button.id = `cell-${row}-${col}`;
+                button.addEventListener('click', () => revealCell(row, col));
+                boardElement.appendChild(button);
+            }
+        }
+    }
+
+    // Oyun başlat
+    function startGame() {
+        if (score <= 0) {
+            document.getElementById("errorMessage").textContent = 'Yeterli MusCoiniz yok!';
+            return; // Eğer puan 0 veya daha düşükse, oyunu başlatma
+        }
+
+        const inputMineCount = document.getElementById('mineCount').value;
+        const inputEnteredPoints = document.getElementById('enterPoints').value;
+
+        numMines = Math.min(Math.max(parseInt(inputMineCount), 1), 24); // Mayın sayısını 1 ile 24 arasında sınırlayın
+        enteredPoints = parseInt(inputEnteredPoints); // Giriş için harcanan puanı alın
+
+        // Mayın sayısına bağlı olarak harcama yapma yerine sadece girilen puan miktarını kullan
+        spentPoints = enteredPoints;  // Yalnızca girilen puan harcanır
+        score -= spentPoints;         // Harcanan puan, kullanıcı puanından çıkar
+
+        // Eğer puan 0'ın altına düşerse, "Para Eksik" mesajı göster
+        if (score < 0) {
+            document.getElementById("errorMessage").textContent = 'Para Eksik!';
+            score = 0; // Puan sıfırlanır
+        } else {
+            document.getElementById("errorMessage").textContent = ''; // Hata mesajını sıfırla
+        }
+
+        document.getElementById("score").textContent = `MusCoin: ${score}`;
+        document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: ${spentPoints}`;
+
+        createBoard();  // Yeni tahtayı oluştur
+        createBoardUI(); // Tahtayı UI'ye ekle
+        gameOver = false; // Oyunu yeniden başlat
+        accumulatedPoints = 0; // Biriken puanları sıfırla
+        document.getElementById("message").textContent = ''; // Oyun mesajını sıfırla
+    }
+
+    // Puan çekme fonksiyonu
+    function spendPoints() {
+        if (accumulatedPoints > 0) {
+            const totalPointsToAdd = Math.floor(accumulatedPoints); // Çekilen puanı tam sayıya yuvarla
+            score += totalPointsToAdd;
+            document.getElementById("score").textContent = `MusCoin: ${score}`;
+            document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: 0`;
+            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: 0`;
+            document.getElementById("spendMessage").textContent = `MusCoin başarıyla çekildi: ${totalPointsToAdd}`;
+
+            // Tüm mayınları göster
+            showAllMines();
+
+            accumulatedPoints = 0; // Biriken puanı sıfırla
+            gameOver = true; // Oyun bitir
+        } else {
+            document.getElementById("spendMessage").textContent = 'Henüz biriken MusCoin yok!';
+        }
+    }
+</script>
+
+</body>
+</html>
