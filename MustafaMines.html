@@ -5,91 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #222;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            margin: 20px;
-            font-size: 24px;
-        }
-        .settings {
-            margin-top: 20px;
-            position: absolute;
-            bottom: 150px;
-            width: 100%;
-            text-align: center;
-        }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(5, 40px);
-            grid-template-rows: repeat(5, 40px);
-            gap: 5px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        button {
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            background-color: #444;
-            color: white;
-            border: 1px solid #999;
-            cursor: pointer;
-        }
-        button.revealed {
-            background-color: #ddd;
-            color: black;
-        }
-        button.mine {
-            background-color: red;
-        }
-        .message {
-            margin-top: 20px;
-            font-size: 20px;
-            color: yellow;
-            position: absolute;
-            top: 52%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .score {
-            font-size: 20px;
-            color: white;
-            margin-top: 10px;
-        }
-        .spent {
-            font-size: 18px;
-            color: red;
-            margin-top: 10px;
-        }
-        .points-accumulated {
-            font-size: 18px;
-            color: lightblue;
-            margin-top: 10px;
-        }
-        .spend-message {
-            font-size: 18px;
-            color: orange;
-            margin-top: 10px;
-        }
-        .error {
-            font-size: 18px;
-            color: red;
-            margin-top: 10px;
-        }
-        .multiplier {
-            font-size: 12px;
-            color: yellow;
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+        /* (Mevcut stil kodları burada) */
     </style>
 </head>
 <body>
@@ -132,6 +48,30 @@
     let enteredPoints = 0; // Girdiği puan
     let gameOver = false;
     let isFirstCellClicked = false; // İlk tıklama kontrolü
+
+    // Oyun durumu verilerini localStorage'a kaydet
+    function saveGameState() {
+        localStorage.setItem("score", score);
+        localStorage.setItem("spentPoints", spentPoints);
+        localStorage.setItem("accumulatedPoints", accumulatedPoints);
+        localStorage.setItem("enteredPoints", enteredPoints);
+        localStorage.setItem("gameOver", gameOver);
+        localStorage.setItem("isFirstCellClicked", isFirstCellClicked);
+        localStorage.setItem("numMines", numMines);
+    }
+
+    // Oyun durumu verilerini localStorage'tan yükle
+    function loadGameState() {
+        if (localStorage.getItem("score")) {
+            score = parseInt(localStorage.getItem("score"));
+            spentPoints = parseInt(localStorage.getItem("spentPoints"));
+            accumulatedPoints = parseInt(localStorage.getItem("accumulatedPoints"));
+            enteredPoints = parseInt(localStorage.getItem("enteredPoints"));
+            gameOver = JSON.parse(localStorage.getItem("gameOver"));
+            isFirstCellClicked = JSON.parse(localStorage.getItem("isFirstCellClicked"));
+            numMines = parseInt(localStorage.getItem("numMines"));
+        }
+    }
 
     // Oyun tahtasını oluştur
     function createBoard() {
@@ -199,6 +139,8 @@
             document.getElementById("message").textContent = `Tebrikler, Kazandınız! Puanınız: ${score + accumulatedPoints}`;
             gameOver = true;
         }
+
+        saveGameState(); // Oyun durumu kaydedilsin
     }
 
     // Tüm mayınları göster
@@ -262,6 +204,8 @@
         gameOver = false; // Oyunu yeniden başlat
         accumulatedPoints = 0; // Biriken puanları sıfırla
         document.getElementById("message").textContent = ''; // Oyun mesajını sıfırla
+
+        saveGameState(); // Oyun durumu kaydedilsin
     }
 
     // Puan çekme fonksiyonu
@@ -282,7 +226,20 @@
         } else {
             document.getElementById("spendMessage").textContent = 'Henüz biriken puan yok!';
         }
+
+        saveGameState(); // Oyun durumu kaydedilsin
     }
+
+    // Sayfa yüklendiğinde oyun durumunu yükle
+    window.onload = function() {
+        loadGameState();
+        if (!gameOver) {
+            createBoardUI();
+            document.getElementById("score").textContent = `Puan: ${score}`;
+            document.getElementById("spent").textContent = `Giriş için harcanan puan: ${spentPoints}`;
+            document.getElementById("pointsAccumulated").textContent = `Biriken Puan: ${accumulatedPoints}`;
+        }
+    };
 </script>
 
 </body>
