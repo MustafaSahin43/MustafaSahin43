@@ -12,11 +12,16 @@
 
     <script>
         async function fetchMatches() {
-            const apiUrl = "http://localhost:3000/matches"; // Proxy sunucuya bağlanıyoruz
+            const apiUrl = "https://api.football-data.org/v2/competitions/PL/matches";
+            const proxyUrl = "https://cors-anywhere.herokuapp.com/"; // Proxy servisini kullanıyoruz
+            const apiKey = "bcb8c2d511f34ce3b55e0e59e9d381b3"; // Buraya kendi API anahtarını koy
+
             try {
-                let response = await fetch(apiUrl);
+                let response = await fetch(proxyUrl + apiUrl, {
+                    headers: { "X-Auth-Token": apiKey }
+                });
                 let data = await response.json();
-                
+
                 let matchList = document.getElementById("matchList");
                 matchList.innerHTML = "";
 
