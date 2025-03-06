@@ -12,6 +12,7 @@
             text-align: center;
             margin: 0;
             padding: 0;
+            overflow-x: hidden; /* Sağdan taşma olmasın */
         }
         h1 {
             margin: 20px;
@@ -20,26 +21,33 @@
         .settings {
             margin-top: 20px;
             position: absolute;
-            bottom: 150px;
+            bottom: 100px; /* Alt kısmı daha yukarıya aldım */
             width: 100%;
             text-align: center;
         }
         .board {
             display: grid;
-            grid-template-columns: repeat(5, 40px);
-            grid-template-rows: repeat(5, 40px);
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
             gap: 5px;
             justify-content: center;
             margin-top: 20px;
+            max-width: 90%; /* Tahtanın genişliği %90 olacak */
+            margin-left: auto;
+            margin-right: auto;
         }
         button {
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
+            width: 100%;
+            height: 100%;
+            font-size: 18px;
             background-color: #444;
             color: white;
             border: 1px solid #999;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
         button.revealed {
             background-color: #ddd;
@@ -53,33 +61,27 @@
             font-size: 20px;
             color: yellow;
             position: absolute;
-            top: 52%;
+            top: 45%; /* Mesajı daha ortalamak için */
             left: 50%;
             transform: translate(-50%, -50%);
+            width: 90%; /* Yüzde ile mesajın genişliğini sınırladım */
         }
-        .score {
-            font-size: 20px;
+        .score, .spent, .points-accumulated {
+            font-size: 18px;
             color: white;
             margin-top: 10px;
         }
         .spent {
-            font-size: 18px;
+            font-size: 16px;
             color: red;
-            margin-top: 10px;
         }
         .points-accumulated {
-            font-size: 18px;
+            font-size: 16px;
             color: lightblue;
-            margin-top: 10px;
         }
-        .spend-message {
-            font-size: 18px;
+        .spend-message, .error {
+            font-size: 16px;
             color: orange;
-            margin-top: 10px;
-        }
-        .error {
-            font-size: 18px;
-            color: red;
             margin-top: 10px;
         }
         .multiplier {
@@ -89,6 +91,44 @@
             top: -20px;
             left: 50%;
             transform: translateX(-50%);
+        }
+
+        /* Mobil uyum için medya sorgusu */
+        @media (max-width: 600px) {
+            .board {
+                grid-template-columns: repeat(5, 1fr); /* 5 hücreli düzen */
+                grid-template-rows: repeat(5, 1fr);
+            }
+            button {
+                font-size: 16px; /* Buton yazı boyutunu küçültme */
+                padding: 10px;
+            }
+            .settings {
+                bottom: 60px; /* Ayarların konumunu küçültme */
+            }
+            .score, .spent, .points-accumulated {
+                font-size: 16px; /* Puan metni boyutunu küçültme */
+            }
+            .message {
+                font-size: 18px; /* Mesaj yazı boyutunu küçük yapmak */
+            }
+        }
+
+        /* Masaüstü (PC) cihazlar için daha geniş düzenleme */
+        @media (min-width: 601px) {
+            .board {
+                grid-template-columns: repeat(5, 1fr); /* 5 hücreli düzen */
+                grid-template-rows: repeat(5, 1fr);
+            }
+            button {
+                font-size: 18px; /* Buton yazı boyutunu büyütme */
+            }
+            .score, .spent, .points-accumulated {
+                font-size: 18px; /* Puan metni boyutunu artır */
+            }
+            .message {
+                font-size: 20px; /* Mesaj yazı boyutunu artır */
+            }
         }
     </style>
 </head>
@@ -164,7 +204,7 @@
     function revealCell(row, col) {
         if (board[row][col].revealed || gameOver) return;
 
-        const cell = document.getElementById(cell-${row}-${col});
+        const cell = document.getElementById(`cell-${row}-${col}`);
         board[row][col].revealed = true;
         revealedCount++;
 
@@ -180,23 +220,23 @@
             cell.classList.add('mine');
             const multiplierElement = document.createElement('div');
             multiplierElement.classList.add('multiplier');
-            multiplierElement.textContent = x${Math.floor(enteredPoints)}; // Çarpan değeri burada yazılacak
+            multiplierElement.textContent = `x${Math.floor(enteredPoints)}`; // Çarpan değeri burada yazılacak
             cell.appendChild(multiplierElement);
             cell.textContent = '💣'; // Mayın simgesi
 
             showAllMines(); // Tüm mayınları göster
-            document.getElementById("message").textContent = Mayına bastınız! Oyun Bitti! Puanınız: ${score + accumulatedPoints};
+            document.getElementById("message").textContent = `Mayına bastınız! Oyun Bitti! Puanınız: ${score + accumulatedPoints}`;
             gameOver = true;
             accumulatedPoints = 0;  // Mayına basınca biriken puarı sıfırlama
         } else {
             cell.classList.add('revealed');
             // Hiçbir şey gösterme (boş hücreler)
             accumulatedPoints += enteredPoints; // Biriken puana ekle
-            document.getElementById("pointsAccumulated").textContent = Biriken Puan: ${Math.floor(accumulatedPoints)}; // Biriken puanı tam sayı olarak göster
+            document.getElementById("pointsAccumulated").textContent = `Biriken Puan: ${Math.floor(accumulatedPoints)}`; // Biriken puanı tam sayı olarak göster
         }
 
         if (revealedCount === gridSize * gridSize - numMines) {
-            document.getElementById("message").textContent = Tebrikler, Kazandınız! Puanınız: ${score + accumulatedPoints};
+            document.getElementById("message").textContent = `Tebrikler, Kazandınız! Puanınız: ${score + accumulatedPoints}`;
             gameOver = true;
         }
     }
@@ -205,7 +245,7 @@
     function showAllMines() {
         for (let row = 0; row < gridSize; row++) {
             for (let col = 0; col < gridSize; col++) {
-                const cell = document.getElementById(cell-${row}-${col});
+                const cell = document.getElementById(`cell-${row}-${col}`);
                 if (board[row][col].mine && !board[row][col].revealed) {
                     cell.classList.add('mine');
                     cell.textContent = '💣';
@@ -217,73 +257,44 @@
     // Tahtayı kullanıcıya göster
     function createBoardUI() {
         const boardElement = document.getElementById('board');
-        boardElement.innerHTML = ''; // Tahtayı temizle
-
+        boardElement.innerHTML = ''; // Tahtayı sıfırla
         for (let row = 0; row < gridSize; row++) {
             for (let col = 0; col < gridSize; col++) {
                 const button = document.createElement('button');
-                button.id = cell-${row}-${col};
-                button.addEventListener('click', () => revealCell(row, col));
+                button.id = `cell-${row}-${col}`;
+                button.onclick = function() {
+                    revealCell(row, col);
+                };
                 boardElement.appendChild(button);
             }
         }
     }
 
-    // Oyun başlat
+    // Oyunu başlat
     function startGame() {
-        if (score <= 0) {
-            document.getElementById("errorMessage").textContent = 'Yeterli puanınız yok! Lütfen puanınızı artırın.';
-            return; // Eğer puan 0 veya daha düşükse, oyunu başlatma
-        }
-
-        const inputMineCount = document.getElementById('mineCount').value;
-        const inputEnteredPoints = document.getElementById('enterPoints').value;
-
-        numMines = Math.min(Math.max(parseInt(inputMineCount), 1), 24); // Mayın sayısını 1 ile 24 arasında sınırlayın
-        enteredPoints = parseInt(inputEnteredPoints); // Giriş için harcanan puanı alın
-
-        // Mayın sayısına bağlı olarak harcama yapma yerine sadece girilen puan miktarını kullan
-        spentPoints = enteredPoints;  // Yalnızca girilen puan harcanır
-        score -= spentPoints;         // Harcanan puan, kullanıcı puanından çıkar
-
-        // Eğer puan 0'ın altına düşerse, "Para Eksik" mesajı göster
-        if (score < 0) {
-            document.getElementById("errorMessage").textContent = 'Para Eksik!';
-            score = 0; // Puan sıfırlanır
-        } else {
-            document.getElementById("errorMessage").textContent = ''; // Hata mesajını sıfırla
-        }
-
-        document.getElementById("score").textContent = Puan: ${score};
-        document.getElementById("spent").textContent = Giriş için harcanan puan: ${spentPoints};
-
-        createBoard();  // Yeni tahtayı oluştur
-        createBoardUI(); // Tahtayı UI'ye ekle
-        gameOver = false; // Oyunu yeniden başlat
-        accumulatedPoints = 0; // Biriken puanları sıfırla
-        document.getElementById("message").textContent = ''; // Oyun mesajını sıfırla
+        numMines = parseInt(document.getElementById("mineCount").value) || 5; // Mayın sayısı
+        createBoard();
+        createBoardUI();
+        document.getElementById("message").textContent = '';
+        document.getElementById("spent").textContent = `Giriş için harcanan puan: ${spentPoints}`;
+        document.getElementById("pointsAccumulated").textContent = `Biriken Puan: 0`;
+        spentPoints = 0;
+        accumulatedPoints = 0;
+        score = 1000; // Puanı sıfırladık
     }
 
-    // Puan çekme fonksiyonu
+    // Puan çekme işlemi
     function spendPoints() {
-        if (accumulatedPoints > 0) {
-            const totalPointsToAdd = Math.floor(accumulatedPoints); // Çekilen puanı tam sayıya yuvarla
-            score += totalPointsToAdd;
-            document.getElementById("score").textContent = Puan: ${score};
-            document.getElementById("spent").textContent = Giriş için harcanan puan: 0;
-            document.getElementById("pointsAccumulated").textContent = Biriken Puan: 0;
-            document.getElementById("spendMessage").textContent = Puan başarıyla çekildi: ${totalPointsToAdd};
-
-            // Tüm mayınları göster
-            showAllMines();
-
-            accumulatedPoints = 0; // Biriken puanı sıfırla
-            gameOver = true; // Oyun bitir
+        let enterPoints = parseInt(document.getElementById("enterPoints").value) || 100;
+        if (score < enterPoints) {
+            document.getElementById("errorMessage").textContent = "Yetersiz Puan!";
         } else {
-            document.getElementById("spendMessage").textContent = 'Henüz biriken puan yok!';
+            score -= enterPoints;
+            spentPoints += enterPoints;
+            document.getElementById("spent").textContent = `Giriş için harcanan puan: ${spentPoints}`;
+            document.getElementById("score").textContent = `Puan: ${score}`;
         }
     }
 </script>
-
 </body>
 </html>
