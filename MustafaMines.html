@@ -93,6 +93,8 @@
         img {
             margin-left: 5px; /* Resmin metin ile arasına boşluk ekler */
             vertical-align: middle; /* Resmin metinle hizalanmasını sağlar */
+            width: 40px; /* MusCoin görselinin boyutu 40px x 40px */
+            height: 40px; /* MusCoin görselinin boyutu 40px x 40px */
         }
     </style>
 </head>
@@ -107,9 +109,9 @@
 <div id="message" class="message"></div>
 
 <!-- Score, Spent, Accumulated Points -->
-<div id="score" class="score">MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"></div>
-<div id="spent" class="spent">Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"></div>
-<div id="pointsAccumulated" class="points-accumulated">Biriken MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"></div>
+<div id="score" class="score">MusCoin: <img src="muscoin.png" alt="coin"></div>
+<div id="spent" class="spent">Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin"></div>
+<div id="pointsAccumulated" class="points-accumulated">Biriken MusCoin: <img src="muscoin.png" alt="coin"></div>
 <div id="spendMessage" class="spend-message"></div>
 <div id="errorMessage" class="error"></div> <!-- Hata mesajı için yeni bir alan -->
 
@@ -200,7 +202,7 @@
         }
 
         if (revealedCount === gridSize * gridSize - numMines) {
-            document.getElementById("message").textContent = `Tebrikler, Kazandınız! MusCoininiz: ${score + accumulatedPoints}`;
+            document.getElementById("message").textContent = `Tebrikler, Kazandınız! Puanınız: ${score + accumulatedPoints}`;
             gameOver = true;
         }
     }
@@ -236,7 +238,7 @@
     // Oyun başlat
     function startGame() {
         if (score <= 0) {
-            document.getElementById("errorMessage").textContent = 'Yeterli MusCoininiz yok!';
+            document.getElementById("errorMessage").textContent = 'Yeterli MusCoiniz yok!';
             return; // Eğer puan 0 veya daha düşükse, oyunu başlatma
         }
 
@@ -258,8 +260,8 @@
             document.getElementById("errorMessage").textContent = ''; // Hata mesajını sıfırla
         }
 
-        document.getElementById("score").textContent = `MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"> ${score}`;
-        document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"> ${spentPoints}`;
+        document.getElementById("score").textContent = `MusCoin: <img src="muscoin.png" alt="coin"> ${score}`;
+        document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin"> ${spentPoints}`;
 
         createBoard();  // Yeni tahtayı oluştur
         createBoardUI(); // Tahtayı UI'ye ekle
@@ -273,9 +275,9 @@
         if (accumulatedPoints > 0) {
             const totalPointsToAdd = Math.floor(accumulatedPoints); // Çekilen puanı tam sayıya yuvarla
             score += totalPointsToAdd;
-            document.getElementById("score").textContent = `MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"> ${score}`;
-            document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"> 0`;
-            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: <img src="muscoin.png" alt="coin" width="32" height="32"> 0`;
+            document.getElementById("score").textContent = `MusCoin: <img src="muscoin.png" alt="coin"> ${score}`;
+            document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: <img src="muscoin.png" alt="coin"> 0`;
+            document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: <img src="muscoin.png" alt="coin"> 0`;
             document.getElementById("spendMessage").textContent = `MusCoin başarıyla çekildi: ${totalPointsToAdd}`;
 
             // Tüm mayınları göster
