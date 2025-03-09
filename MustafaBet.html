@@ -140,16 +140,20 @@
     let numMines = 5;  // Başlangıçta 5 mayın
     let board = [];
     let revealedCount = 0;
-    let score = 1000;   // Başlangıç puanı 1000
+    let score = localStorage.getItem('score') ? parseInt(localStorage.getItem('score')) : 1000;   // localStorage'dan puanı al veya varsayılan 1000
     let spentPoints = 0; // Harcanan puan
     let accumulatedPoints = 0; // Biriken puan
     let enteredPoints = 0; // Girdiği puan
     let gameOver = false;
     let isFirstCellClicked = false; // İlk tıklama kontrolü
 
+    // Sayfa yüklendiğinde puanı güncelle
+    document.getElementById("score").textContent = `MusCoin: ${score}`;
+
     // Sola eklenen butonun işlevi
     function add10000Points() {
         score += 10000; // 10.000 MusCoin ekle
+        localStorage.setItem('score', score); // Puanı localStorage'a kaydet
         document.getElementById("score").textContent = `MusCoin: ${score}`;
     }
 
@@ -265,11 +269,13 @@
         // Mayın sayısına bağlı olarak harcama yapma yerine sadece girilen puan miktarını kullan
         spentPoints = enteredPoints;  // Yalnızca girilen puan harcanır
         score -= spentPoints;         // Harcanan puan, kullanıcı puanından çıkar
+        localStorage.setItem('score', score); // Puanı localStorage'a kaydet
 
         // Eğer puan 0'ın altına düşerse, "Para Eksik" mesajı göster
         if (score < 0) {
             document.getElementById("errorMessage").textContent = 'Para Eksik!';
             score = 0; // Puan sıfırlanır
+            localStorage.setItem('score', score); // Puanı localStorage'a kaydet
         } else {
             document.getElementById("errorMessage").textContent = ''; // Hata mesajını sıfırla
         }
@@ -289,6 +295,7 @@
         if (accumulatedPoints > 0) {
             const totalPointsToAdd = Math.floor(accumulatedPoints); // Çekilen puanı tam sayıya yuvarla
             score += totalPointsToAdd;
+            localStorage.setItem('score', score); // Puanı localStorage'a kaydet
             document.getElementById("score").textContent = `MusCoin: ${score}`;
             document.getElementById("spent").textContent = `Giriş için harcanan MusCoin: 0`;
             document.getElementById("pointsAccumulated").textContent = `Biriken MusCoin: 0`;
